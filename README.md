@@ -39,11 +39,11 @@ ARGS:
 -f = Function, select one possivel function
 -v = Vlan ID number
 ```
-### Working functions:
+Working functions:
 ```
 interfaceterce = Show all interface like terse command showing Operational operStatus
 subscriber = show subscriber statistic pppoe, dhcp and total of Sessions
 vlanpppoe = show all vlans that juniper device recognize and autenticate a subscribers
 subscriberforonevlan = show how many subscriber is connected using a especific vlan
-subscriberforvlan = show all vlans and how many subscrbers is coonected per vlan, and the total of subscriber souting and sum all vlans 
+subscriberforvlan = show all vlans and how many subscrbers is coonected per vlan, and the total of subscriber souting and sum all vlans
 ```
