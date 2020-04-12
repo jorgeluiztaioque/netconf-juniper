@@ -19,11 +19,16 @@ Only downsload and install python3 for windows and install libery using PIP
 ```
 pip3 install ncclient
 ```
+## Configuring Juniper devices - Enable Netconf
+```
+set system services netconf ssh port 2222
+```
+Ps. Do not forget of allow tcp port 2222 on Router-Engine protection or in outbox firewall
 
 ## Download
 ```
-bash
-wget
+On bash
+wget https://raw.githubusercontent.com/jorgeluiztaioque/netconf-juniper-api/master/netconf-juniper-api.py
 chmod +x netconf-juniper-api-py
 ```
 
@@ -46,4 +51,50 @@ subscriber = show subscriber statistic pppoe, dhcp and total of Sessions
 vlanpppoe = show all vlans that juniper device recognize and autenticate a subscribers
 subscriberforonevlan = show how many subscriber is connected using a especific vlan
 subscriberforvlan = show all vlans and how many subscrbers is coonected per vlan, and the total of subscriber souting and sum all vlans
+```
+
+### Runing examples
+```
+./netconf-juniper-api.py -H 10.10.10.1 -u netconf -p 123456789 -n 2222 -f subscriber
+Numbers of VLANS = 111
+Numbers of PPPOE = 14339
+Numbers of DHCPV6 = 11744
+Total of Sessions = 26193
+```
+
+```
+./netconf-juniper-api.py -H 10.10.10.1 -u netconf -p 123456789 -f subscriberforonevlan -v 1661
+Total Subscribers on vlan 1661 = 19
+```
+
+```
+./netconf-juniper-api.py -H 10.10.10.1 -u netconf -p 123456789 -f subscriberforvlan
+Total Subscribers on vlan 836 = 478
+Total Subscribers on vlan 831 = 391
+Total Subscribers on vlan 834 = 301
+Total Subscribers on vlan 838 = 192
+Total Subscribers on vlan 830 = 303
+Total Subscribers on vlan 835 = 338
+Total Subscribers on vlan 833 = 384
+Total Subscribers on vlan 829 = 270
+Total Subscribers on vlan 837 = 212
+Total of Subscribers = 2869
+
+```
+
+```
+./netconf-juniper-api.py -H 10.10.10.1 -u netconf -p 123456789 -f vlanpppoe
+836
+831
+834
+838
+830
+835
+833
+829
+837
+832
+839
+840
+Total numbers of vlans is = 12
 ```

@@ -133,7 +133,7 @@ def numSubscriberForVlan(vlan):
 
 	#subscribers-information/subscriber/user-name
 	size = len(result.xpath('subscribers-information/subscriber/ip-address'))
-	print ('Total Subscriber on vlan '+str(vlan)+' = '+str(size))
+	print ('Total Subscribers on vlan '+str(vlan)+' = '+str(size))
 
 def numSubscriberForVlanCount(vlan):
 
@@ -155,7 +155,7 @@ def vlanPppoeCount():
 		subVlan = result.xpath('subscribers-information/subscriber/vlan-id')
 		subscriberVlan = (subVlan[i].text).strip()
 		vlan, size = numSubscriberForVlanCount(subscriberVlan.replace('0x8100.',''))
-		print ('Total Subscriber on vlan '+str(vlan)+' = '+str(size))
+		print ('Total Subscribers on vlan '+str(vlan)+' = '+str(size))
 		total = total+size
 	print ('Total of subscribers = '+str(total))
 	subiscriber()
