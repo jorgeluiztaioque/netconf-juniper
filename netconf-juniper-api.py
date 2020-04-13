@@ -103,14 +103,18 @@ def subiscriber():
 	dhcp = result.xpath('subscribers-summary-information/counters/session-type-dhcp')
 	total = result.xpath('subscribers-summary-information/counters/session-state-active')
 
-	pppoeCount = (pppoe[0].text).strip()
-	vlanPppoe = (vlan[0].text).strip()
-	dhcpCount = (dhcp[0].text).strip()
+	if len(vlan):
+		vlanPppoe = (vlan[0].text).strip()
+		print ('Numbers of VLANS = '+vlanPppoe)
+	if len(pppoe):
+		pppoeCount = (pppoe[0].text).strip()
+		print ('Numbers of PPPOE = '+pppoeCount)
+	if len(dhcp):
+		dhcpCount = (dhcp[0].text).strip()
+		print ('Numbers of DHCPV6 = '+dhcpCount)
+
 	totalCount = (total[0].text).strip()
 
-	print ('Numbers of VLANS = '+vlanPppoe)
-	print ('Numbers of PPPOE = '+pppoeCount)
-	print ('Numbers of DHCPV6 = '+dhcpCount)
 	print ('Total of Sessions = '+totalCount)
 
 
