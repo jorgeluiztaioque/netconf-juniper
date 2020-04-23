@@ -47,6 +47,9 @@ class CommandLine:
 			status = True
 		else:
 			vlan = ''
+		'''
+		FUNCTION SELECT
+		'''
 		if argument.function:
 			global function
 			function = (argument.function)
@@ -64,6 +67,9 @@ class CommandLine:
 					print ('You must declare vlan with -v VLAN_NUMBER')
 			if function == 'subscriberforvlan':
 				vlanPppoeCount()
+			if function == 'interfacepspppoe':
+				interfacePsPppoe()
+
 		if not status:
 			print("Maybe you want to use -H or -u or -p or -n or -f or -v as arguments ?")
 
@@ -163,6 +169,24 @@ def vlanPppoeCount():
 		total = total+size
 	print ('Total of subscribers = '+str(total))
 	subiscriber()
+
+def interfacePsPppoe():
+
+	terminal = "show interface ps*"
+
+	result = (connection(terminal))
+
+	size = len(result.xpath('interface-information/physical-interface/name'))
+	for i in range(size):
+	  interfaces = result.xpath('interface-information/physical-interface/name')
+	  interface = (interfaces[i].text).strip()
+	  terminal2 = ('show subscribers summary physical-interface '+str(interface))
+	  result2 = (connection(terminal2))
+	  numSubscriber = result2.xpath('subscribers-summary-information/counters/session-type-pppoe')
+	  if numSubscriber:
+	    totalSubscriber = (numSubscriber[0].text).strip()
+	    print ('Interface = '+interface+' pppoe = '+totalSubscriber)
+
 
 if __name__ == '__main__':
     app = CommandLine()
