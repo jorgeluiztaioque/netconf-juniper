@@ -13,12 +13,13 @@ defaultnetconfport = 2222
 class CommandLine:
 	def __init__(self):
 		parser = argparse.ArgumentParser(description = "Description for my parser")
-		parser.add_argument("-H", "--Host", help = "Example: Help argument", required = True, default = "")
-		parser.add_argument("-u", "--user", help = "Example: Save argument", required = True, default = "")
-		parser.add_argument("-p", "--password", help = "Example: Print argument", required = True, default = "")
-		parser.add_argument("-n", "--netconfport", help = "Example: Output argument", required = False, default = "")
-		parser.add_argument("-f", "--function", help = "Example: Output argument", required = False, default = "")
-		parser.add_argument("-v", "--vlan", help = "Example: Output argument", required = False, default = "")
+		parser.add_argument("-H", "--Host", help = "HOST_NAME or IP_ADDRESS", required = False, default = "")
+		parser.add_argument("-u", "--user", help = "NETCONF USERNAME", required = False, default = "")
+		parser.add_argument("-p", "--password", help = "NETCONF PASSWORD", required = False, default = "")
+		parser.add_argument("-n", "--netconfport", help = "NETCONF PORT", required = False, default = "")
+		parser.add_argument("-f", "--function", help = "FUNCTION NAME -f ALL FOR ALL OPTIONS", required = False, default = "")
+		parser.add_argument("-v", "--vlan", help = "VLAN-ID NUMBER", required = False, default = "")
+
 
 		argument = parser.parse_args()
 		status = False
@@ -70,8 +71,25 @@ class CommandLine:
 			if function == 'interfacepspppoe':
 				interfacePsPppoe()
 
+			if function == 'ALL':
+				print ('FUNCTIONS:')
+				print ("interfaceterse - ")
+				print ("subscriber - ")
+				print ('vlanpppoe')
+				print ("subscriberforonevlan")
+				print ("subscriberforvlan - ")
+				print ("interfacepspppoe - ")
+
+
 		if not status:
-			print("Maybe you want to use -H or -u or -p or -n or -f or -v as arguments ?")
+			print("Usage ./netconf-juniper-api.py -H 200.200.200.200 -u root -p 1234 -n 2222 -f test")
+			print ('FUNCTIONS:')
+			print ("interfaceterse - ")
+			print ("subscriber - ")
+			print ('vlanpppoe')
+			print ("subscriberforonevlan")
+			print ("subscriberforvlan - ")
+			print ("interfacepspppoe - ")
 
 def connection(terminal2):
 	conn = manager.connect(
