@@ -4,6 +4,8 @@ __author__ = 'Jorge Luiz Taioque'
 __version__= 0.1
 
 from ncclient import manager
+from tabulate import tabulate as tb
+from texttable import Texttable
 import argparse
 import sys
 
@@ -55,6 +57,8 @@ class CommandLine:
 			global function
 			function = (argument.function)
 			status = True
+			if function == 'system':
+				system()
 			if function == 'interfaceterse':
 				interfaceterse()
 			if function == 'subscriber':
@@ -72,24 +76,32 @@ class CommandLine:
 				interfacePsPppoe()
 
 			if function == 'ALL':
-				print ('FUNCTIONS:')
-				print ("interfaceterse - ")
-				print ("subscriber - ")
-				print ('vlanpppoe')
-				print ("subscriberforonevlan")
-				print ("subscriberforvlan - ")
-				print ("interfacepspppoe - ")
+				print("Usage ./netconf-juniper-api.py -H 200.200.200.200 -u root -p 1234 -n 2222 -f FUNCTION_NAME")
+				printHelp = Texttable()
+				printHelp.header(['FUNCTION', 'DESCRIBRE'])
+				printHelp.add_row(['system', 'show system information'])
+				printHelp.add_row(['interfaceterse', 'show all interface as terse'])
+				printHelp.add_row(['subscriber', 'show subscribers connected numers as PPPOE, DHCP and all'])
+				printHelp.add_row(['vlanpppoe', 'show all vlans used to connect for customers to conect pppoe'])
+				printHelp.add_row(['subscriberforonevlan', 'show number of sbscriber using a specific VLAN'])
+				printHelp.add_row(['subscriverforvlan', 'show all vlans and how many subscribers is connected in witch vlan and total'])
+				printHelp.add_row(['interfacepspppoe', 'show all interface PS and numer of subscribers is connected using witch interface'])
+				print (printHelp.draw())
 
 
 		if not status:
-			print("Usage ./netconf-juniper-api.py -H 200.200.200.200 -u root -p 1234 -n 2222 -f test")
-			print ('FUNCTIONS:')
-			print ("interfaceterse - ")
-			print ("subscriber - ")
-			print ('vlanpppoe')
-			print ("subscriberforonevlan")
-			print ("subscriberforvlan - ")
-			print ("interfacepspppoe - ")
+			print("Usage ./netconf-juniper-api.py -H 200.200.200.200 -u root -p 1234 -n 2222 -f FUNCTION_NAME")
+			printHelp = Texttable()
+			printHelp.header(['FUNCTION', 'DESCRIBRE'])
+			printHelp.add_row(['system', 'show system information'])
+			printHelp.add_row(['interfaceterse', 'show all interface as terse'])
+			printHelp.add_row(['subscriber', 'show subscribers connected numers as PPPOE, DHCP and all'])
+			printHelp.add_row(['vlanpppoe', 'show all vlans used to connect for customers to conect pppoe'])
+			printHelp.add_row(['subscriberforonevlan', 'show number of sbscriber using a specific VLAN'])
+			printHelp.add_row(['subscriverforvlan', 'show all vlans and how many subscribers is connected in witch vlan and total'])
+			printHelp.add_row(['interfacepspppoe', 'show all interface PS and numer of subscribers is connected using witch interface'])
+			print (printHelp.draw())
+
 
 def connection(terminal2):
 	conn = manager.connect(
@@ -104,6 +116,22 @@ def connection(terminal2):
 	result = conn.command(terminal2, format='xml')
 	conn.close_session()
 	return result
+
+def system():
+
+	terminal = "show system information"
+	result = (connection(terminal))
+
+	hardware = result.xpath('system-information/hardware-model')
+	osName = result.xpath('system-information/os-name')
+	osVersion = result.xpath('system-information/os-version')
+	serial = result.xpath('system-information/serial-number')
+	hostName = result.xpath('system-information/host-name')
+
+	res = Texttable()
+	res.add_rows([['Hostname', (hostName[0].text).strip()], ['Hardware',(hardware[0].text).strip()], ['OS Name', (osName[0].text).strip()], ['OS Version', (osVersion[0].text).strip()], ['Serial Number', (serial[0].text).strip()]])
+	print (res.draw())
+	#print (hardware2)
 
 def interfaceterse():
 
