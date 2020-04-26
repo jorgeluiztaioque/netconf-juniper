@@ -3,11 +3,18 @@
 __author__ = 'Jorge Luiz Taioque'
 __version__= 0.1
 
-from ncclient import manager
-from tabulate import tabulate as tb
+#from ncclient import manager
 from texttable import Texttable
 import argparse
 import sys
+import os
+
+from connection import *
+sys.path.append(os.path.abspath("function/"))
+from nc_system import *
+from subscriber import *
+from interface import *
+
 
 #Shot config
 defaultnetconfport = 2222
@@ -58,22 +65,22 @@ class CommandLine:
 			function = (argument.function)
 			status = True
 			if function == 'system':
-				system()
+				system(host, netconfport, user, password)
 			if function == 'interfaceterse':
-				interfaceterse()
+				interfaceterse(host, netconfport, user, password)
 			if function == 'subscriber':
-				subiscriber()
+				subscriber(host, netconfport, user, password)
 			if function == 'vlanpppoe':
-				vlanPppoe()
+				vlanPppoe(host, netconfport, user, password)
 			if function == 'subscriberforonevlan':
 				if vlan:
-					numSubscriberForVlan(vlan)
+					numSubscriberForVlan(host, netconfport, user, password, vlan)
 				else:
 					print ('You must declare vlan with -v VLAN_NUMBER')
 			if function == 'subscriberforvlan':
-				vlanPppoeCount()
+				vlanPppoeCount(host, netconfport, user, password)
 			if function == 'interfacepspppoe':
-				interfacePsPppoe()
+				interfacePsPppoe(host, netconfport, user, password)
 
 			if function == 'ALL':
 				print("Usage ./netconf-juniper-api.py -H 200.200.200.200 -u root -p 1234 -n 2222 -f FUNCTION_NAME")
@@ -101,138 +108,6 @@ class CommandLine:
 			printHelp.add_row(['subscriverforvlan', 'show all vlans and how many subscribers is connected in witch vlan and total'])
 			printHelp.add_row(['interfacepspppoe', 'show all interface PS and numer of subscribers is connected using witch interface'])
 			print (printHelp.draw())
-
-
-def connection(terminal2):
-	conn = manager.connect(
-		host = host,
-		port = netconfport,
-		username = user,
-		password = password,
-		timeout = 100,
-		device_params = {'name':'junos'},
-		hostkey_verify = False)
-	#print (terminal2)
-	result = conn.command(terminal2, format='xml')
-	conn.close_session()
-	return result
-
-def system():
-
-	terminal = "show system information"
-	result = (connection(terminal))
-
-	hardware = result.xpath('system-information/hardware-model')
-	osName = result.xpath('system-information/os-name')
-	osVersion = result.xpath('system-information/os-version')
-	serial = result.xpath('system-information/serial-number')
-	hostName = result.xpath('system-information/host-name')
-
-	res = Texttable()
-	res.add_rows([['Hostname', (hostName[0].text).strip()], ['Hardware',(hardware[0].text).strip()], ['OS Name', (osName[0].text).strip()], ['OS Version', (osVersion[0].text).strip()], ['Serial Number', (serial[0].text).strip()]])
-	print (res.draw())
-	#print (hardware2)
-
-def interfaceterse():
-
-	terminal = "show interface terse"
-	result = (connection(terminal))
-	size = len(result.xpath('interface-information/physical-interface/name'))
-	for i in range(size):
-		interface = result.xpath('interface-information/physical-interface/name')
-		oper = result.xpath('interface-information/physical-interface/oper-status')
-		interfaceName = (interface[i].text).strip()
-		operStatus = (oper[i].text).strip()
-		print (interfaceName+' '+operStatus)
-
-def subiscriber():
-
-	terminal = "show subscriber summary"
-	result = (connection(terminal))
-
-	vlan = result.xpath('subscribers-summary-information/counters/session-type-vlan')
-	pppoe = result.xpath('subscribers-summary-information/counters/session-type-pppoe')
-	dhcp = result.xpath('subscribers-summary-information/counters/session-type-dhcp')
-	total = result.xpath('subscribers-summary-information/counters/session-state-active')
-
-	if len(vlan):
-		vlanPppoe = (vlan[0].text).strip()
-		print ('Numbers of VLANS = '+vlanPppoe)
-	if len(pppoe):
-		pppoeCount = (pppoe[0].text).strip()
-		print ('Numbers of PPPOE = '+pppoeCount)
-	if len(dhcp):
-		dhcpCount = (dhcp[0].text).strip()
-		print ('Numbers of DHCPV6 = '+dhcpCount)
-
-	totalCount = (total[0].text).strip()
-
-	print ('Total of Sessions = '+totalCount)
-
-
-def vlanPppoe():
-
-	terminal = "show subscriber"
-	result = (connection(terminal))
-
-	size = len(result.xpath('subscribers-information/subscriber/vlan-id'))
-	for i in range(size):
-		subVlan = result.xpath('subscribers-information/subscriber/vlan-id')
-		subscriberVlan = (subVlan[i].text).strip()
-		print (subscriberVlan.replace('0x8100.',''))
-	print ('Total numbers of vlans is = '+str(size))
-
-def numSubscriberForVlan(vlan):
-
-	terminal = ('show subscribers vlan-id '+str(vlan))
-	result = (connection(terminal))
-
-	#subscribers-information/subscriber/user-name
-	size = len(result.xpath('subscribers-information/subscriber/ip-address'))
-	print ('Total Subscribers on vlan '+str(vlan)+' = '+str(size))
-
-def numSubscriberForVlanCount(vlan):
-
-	terminal = ('show subscribers vlan-id '+str(vlan))
-	result2 = (connection(terminal))
-
-	#subscribers-information/subscriber/user-name
-	size = len(result2.xpath('subscribers-information/subscriber/ip-address'))
-	return vlan, size
-	#print ('Total Subscriber on vlan '+str(vlan)+' = '+str(size))
-
-def vlanPppoeCount():
-
-	terminal = "show subscriber"
-	result = (connection(terminal))
-	total = 0
-	size = len(result.xpath('subscribers-information/subscriber/vlan-id'))
-	for i in range(size):
-		subVlan = result.xpath('subscribers-information/subscriber/vlan-id')
-		subscriberVlan = (subVlan[i].text).strip()
-		vlan, size = numSubscriberForVlanCount(subscriberVlan.replace('0x8100.',''))
-		print ('Total Subscribers on vlan '+str(vlan)+' = '+str(size))
-		total = total+size
-	print ('Total of subscribers = '+str(total))
-	subiscriber()
-
-def interfacePsPppoe():
-
-	terminal = "show interface ps*"
-
-	result = (connection(terminal))
-
-	size = len(result.xpath('interface-information/physical-interface/name'))
-	for i in range(size):
-	  interfaces = result.xpath('interface-information/physical-interface/name')
-	  interface = (interfaces[i].text).strip()
-	  terminal2 = ('show subscribers summary physical-interface '+str(interface))
-	  result2 = (connection(terminal2))
-	  numSubscriber = result2.xpath('subscribers-summary-information/counters/session-type-pppoe')
-	  if numSubscriber:
-	    totalSubscriber = (numSubscriber[0].text).strip()
-	    print ('Interface = '+interface+' pppoe = '+totalSubscriber)
-
 
 if __name__ == '__main__':
     app = CommandLine()
