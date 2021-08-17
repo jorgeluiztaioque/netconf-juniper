@@ -77,18 +77,33 @@ def vlanPppoeCount(host, netconfport, user, password):
 	subiscriber()
 
 def interfacePsPppoe(host, netconfport, user, password):
-
+	total = 0
 	terminal = "show interface ps*"
+	terminal2 = "show interface ps*.0 terse"
 
 	result = (connection(host, netconfport, user, password, terminal))
+	result2 = (connection(host, netconfport, user, password, terminal2))
 
-	size = len(result.xpath('interface-information/physical-interface/name'))
-	for i in range(size):
-	  interfaces = result.xpath('interface-information/physical-interface/name')
-	  interface = (interfaces[i].text).strip()
-	  terminal2 = ('show subscribers summary physical-interface '+str(interface))
-	  result2 = (connection(host, netconfport, user, password, terminal2))
-	  numSubscriber = result2.xpath('subscribers-summary-information/counters/session-type-pppoe')
-	  if numSubscriber:
-	    totalSubscriber = (numSubscriber[0].text).strip()
-	    print ('Interface = '+interface+' pppoe = '+totalSubscriber)
+	#size = len(result.xpath('interface-information/physical-interface/name'))
+	interfaces = result.xpath('interface-information/physical-interface/name')
+	descriptions = result.xpath('interface-information/physical-interface/logical-interface/description')
+	interfaceAdmin = result2.xpath('interface-information/logical-interface/admin-status')
+	interfaceOper = result2.xpath('interface-information/logical-interface/oper-status')
+	for i in range(len(interfaces)):
+		#check if interface is up
+		intAdminUp = (interfaceAdmin[i].text).strip()
+		intUperUp = (interfaceOper[i].text).strip()
+		if intAdminUp == "up" and intUperUp == "up":
+			interface = (interfaces[i].text).strip()
+			description = (descriptions[i].text).strip()
+			terminal2 = ('show subscribers summary physical-interface '+str(interface))
+			result2 = (connection(host, netconfport, user, password, terminal2))
+			numSubscriber = result2.xpath('subscribers-summary-information/counters/session-type-pppoe')
+			if numSubscriber:
+				totalSubscriber = (numSubscriber[0].text).strip()
+				print ('Interface = '+interface+' '+description+' pppoe = '+totalSubscriber)
+				total = total+int(totalSubscriber)
+			else:
+				totalSubscriber = '0'
+				#print ('Interface = '+interface+' '+description+' pppoe = '+totalSubscriber)
+	print ("Total Subiscribers = "+str(total))
