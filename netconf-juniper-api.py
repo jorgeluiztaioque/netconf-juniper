@@ -17,7 +17,7 @@ from interface import *
 
 
 #Shot config
-defaultnetconfport = 2222
+defaultnetconfport = 830
 
 class CommandLine:
 	def __init__(self):
@@ -91,13 +91,13 @@ class CommandLine:
 				printHelp.add_row(['subscriber', 'show subscribers connected numers as PPPOE, DHCP and all'])
 				printHelp.add_row(['vlanpppoe', 'show all vlans used to connect for customers to conect pppoe'])
 				printHelp.add_row(['subscriberforonevlan', 'show number of sbscriber using a specific VLAN'])
-				printHelp.add_row(['subscriverforvlan', 'show all vlans and how many subscribers is connected in witch vlan and total'])
+				printHelp.add_row(['subscriberforvlan', 'show all vlans and how many subscribers is connected in witch vlan and total'])
 				printHelp.add_row(['interfacepspppoe', 'show all interface PS and numer of subscribers is connected using witch interface'])
 				print (printHelp.draw())
 
 
 		if not status:
-			print("Usage ./netconf-juniper-api.py -H 200.200.200.200 -u root -p 1234 -n 2222 -f FUNCTION_NAME")
+			print("Usage ./netconf-juniper-api.py -H 200.200.200.200 -u root -p 1234 -n 830 -f FUNCTION_NAME")
 			printHelp = Texttable()
 			printHelp.header(['FUNCTION', 'DESCRIBRE'])
 			printHelp.add_row(['system', 'show system information'])
