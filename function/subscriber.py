@@ -70,7 +70,7 @@ def vlanPppoeCount(host, netconfport, user, password):
 	for i in range(size):
 		subVlan = result.xpath('subscribers-information/subscriber/vlan-id')
 		subscriberVlan = (subVlan[i].text).strip()
-		vlan, size = numSubscriberForVlanCount(subscriberVlan.replace('0x8100.',''))
+		vlan, size = numSubscriberForVlanCount(host, netconfport, user, password, subscriberVlan.replace('0x8100.',''))
 		print ('Total Subscribers on vlan '+str(vlan)+' = '+str(size))
 		total = total+size
 	print ('Total of subscribers = '+str(total))
