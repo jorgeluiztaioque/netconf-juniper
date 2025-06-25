@@ -21,15 +21,14 @@ pip3 install ncclient
 ```
 ## Configuring Juniper devices - Enable Netconf
 ```
-set system services netconf ssh port 2222
+set system services netconf ssh port 830
 ```
-Ps. Do not forget of allow tcp port 2222 on Router-Engine protection or in outbox firewall
+Ps. Do not forget of allow tcp port 830 on Router-Engine protection or in outbox firewall
 
 ## Download
 ```
 On bash
-wget https://raw.githubusercontent.com/jorgeluiztaioque/netconf-juniper-api/master/netconf-juniper-api.py
-chmod +x netconf-juniper-api-py
+wget https://github.com/jorgeluiztaioque/netconf-juniper.git
 ```
 
 ## How to use
@@ -55,7 +54,7 @@ subscriberforvlan = show all vlans and how many subscrbers is coonected per vlan
 
 ### Runing examples
 ```
-./netconf-juniper-api.py -H 10.10.10.1 -u netconf -p 123456789 -n 2222 -f subscriber
+./netconf-juniper-api.py -H 10.10.10.1 -u netconf -p 123456789 -n 830 -f subscriber
 Numbers of VLANS = 111
 Numbers of PPPOE = 14339
 Numbers of DHCPV6 = 11744
